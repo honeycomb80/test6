@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(version: 20140709182211) do
   add_index "month_counts", ["wordbank_id"], name: "index_month_counts_on_wordbank_id", using: :btree
 
   create_table "months", force: true do |t|
-    t.integer  "month"
+    t.date     "month"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -64,7 +64,7 @@ ActiveRecord::Schema.define(version: 20140709182211) do
   add_index "week_counts", ["wordbank_id"], name: "index_week_counts_on_wordbank_id", using: :btree
 
   create_table "weeks", force: true do |t|
-    t.integer  "week"
+    t.date     "week"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

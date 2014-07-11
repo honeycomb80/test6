@@ -27,12 +27,15 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 # for the scrapes
 gem 'nokogiri'
 gem 'mechanize'
-gem 'redis'
-gem 'sidekiq'
-gem 'ice_cube'
-gem 'celluloid'
-gem 'sidetiq'
-gem 'unicorn'
+
+# for the async
+# gem 'whenever'
+# gem 'redis'
+# gem 'sidekiq'
+# gem 'ice_cube'
+# gem 'celluloid'
+# gem 'sidetiq'
+# gem 'unicorn'
 
 # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
 group :development do 

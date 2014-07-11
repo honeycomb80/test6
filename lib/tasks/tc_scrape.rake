@@ -1,5 +1,5 @@
 #this file is designed to scrape TechCrunch pages and create
-# Articles, and Wordbanks (words).
+# Articles, and Wordbanks (words).  It's a beast.
 
 task :tc_scrape => :environment do 
   require 'parsing'
@@ -25,7 +25,7 @@ task :tc_scrape => :environment do
         tc_id = link['id'].to_i
         article_date = link.css('time')[0]['datetime']
         article_date = Date.parse(article_date)
-        # Gets the author
+        # Gets the author (which isn't always in the same place)
         if link.css('div.byline a').text.empty?
           a = link.css('div.byline').text
           b = link.css('div.byline time').text
@@ -41,7 +41,7 @@ task :tc_scrape => :environment do
         # Gets the headline
         headline = this.css('a')[0].text
         # Makes an article instance
-        Article.create(headline: headline, date: article_date, url: link, author: author, tc_id: tc_id)
+        # Article.create(headline: headline, date: article_date, url: link, author: author, tc_id: tc_id)
         # Creates the mechanize object to the article for scraping later
         m_link = this.css('a')[0]
         url = Mechanize::Page::Link.new(m_link, agent, tc)
@@ -77,17 +77,23 @@ task :tc_scrape => :environment do
 
   def count_total(array_of_words)
     count = Hash.new(0) 
-    words.each { |word| count[word] += 1 } 
+    array_of_words.each { |word| count[word] += 1 }
+  end
+
+  def title_count(array_of_words)
+    count = Hash.new(0)
+    array_of_words.each { |word| count[word] += 1 }
+  end
 
   # Makes an array into smaller, 2 and 3 word arrays...
   # ...then returns an array of these smaller arrays.
   # It also checks them for punctuation and shortness problems.
   # The first is for article words, the second is for article headlines
   def make_word_phrase(array_of_words)
-    array.each do |word|
-      n = array.index(word)
+    array_of_words.each do |word|
+      n = array_of_words.index(word)
       # Creates a two word array
-      two_word = array[n..n+1]
+      two_word = array_of_words[n..n+1]
       # Checks for the punctuations
       check_two(two_word)
       # Checks for two words
@@ -99,15 +105,13 @@ task :tc_scrape => :environment do
           strip_punct(c)
         end
         if proper_two(two_word)
-          two_word.join(" ")
-          Wordbank.create(word: two_word, brand: true, headline: false)
+          two_word = two_word.join(" ")
         else
-          two_word.join(" ")
-          Wordbank.create(word: two_word, brand: false, headline: false)
+          two_word = two_word.join(" ")
         end
       end
       # Creates a three word array
-      three_word = array[n..n+2]
+      three_word = array_of_words[n..n+2]
       # Checks for the punctuations
       check_three(three_word)
       if three_word[2].nil?
@@ -117,21 +121,19 @@ task :tc_scrape => :environment do
           strip_punct(c)
         end
         if proper_three(three_word)
-          three_word.join(" ")
-          Wordbank.create(word: three_word, brand: true, headline: false)
+          three_word = three_word.join(" ")
         else
-          three_word.join(" ")
-          Wordbank.create(word: three_word, brand: false, headline: false)
+          three_word = three_word.join(" ")
         end
       end
     end
   end
 
   def make_title_phrase(array_of_words)
-    array.each do |word|
-      n = array.index(word)
+    array_of_words.each do |word|
+      n = array_of_words.index(word)
       # Creates a two word array
-      two_word = array[n..n+1]
+      two_word = array_of_words[n..n+1]
       check_two(two_word)
       if two_word[1].nil?
         two_word.clear
@@ -143,7 +145,7 @@ task :tc_scrape => :environment do
         Wordbank.create(word: two_word, brand: false, headline: true)
       end
       # creates a three word array
-      three_word = array[n..n+2]
+      three_word = array_of_words[n..n+2]
       check_three(three_word)
       if three_word[2].nil?
         three_word.clear
